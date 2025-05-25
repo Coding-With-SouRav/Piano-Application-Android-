@@ -6,17 +6,22 @@ from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.metrics import dp
 from kivy.uix.scrollview import ScrollView
+
 TOTAL_KEYS = 61
 WHITE_KEYS_COUNT = 31
 BLACK_KEYS_COUNT = 30
 SOUNDS_DIR = "sounds"
+
 sound_files = sorted(
     [os.path.join(SOUNDS_DIR, f) for f in os.listdir(SOUNDS_DIR) if f.endswith(".mp3")]
 )
+
 if len(sound_files) < TOTAL_KEYS:
     raise Exception(f"Not enough sounds found in '{SOUNDS_DIR}' folder. Required: 61, Found: {len(sound_files)}")
 assigned_sounds = [SoundLoader.load(path) for path in sound_files[:TOTAL_KEYS]]
+
 class PianoKey(Button):
+
     def __init__(self, sound, color, **kwargs):
         super().__init__(**kwargs)
         self.sound = sound
@@ -27,16 +32,21 @@ class PianoKey(Button):
         self.bind(on_press=self.play_sound)
         self.bind(on_press=self.change_color_press)
         self.bind(on_release=self.change_color_release)
+
     def play_sound(self, *args):
         if self.sound:
             self.sound.seek(0)
             self.sound.play()
+
     def change_color_press(self, *args):
         if self.original_color == (0, 0, 0, 1):
             self.background_color = (0, 1, 1, 1)
+
     def change_color_release(self, *args):
         self.background_color = self.original_color
+
 class PianoApp(App):
+
     def build(self):
         self.black_keys = []
         scroll_view = ScrollView(
@@ -84,8 +94,10 @@ class PianoApp(App):
                 sound_index += 1
         Window.bind(on_resize=self.update_black_keys)
         return scroll_view
+
     def update_black_keys(self, *args):
         for key, y_pos, width in self.black_keys:
             key.pos = (Window.width - width, y_pos)
+
 if __name__ == '__main__':
     PianoApp().run()
